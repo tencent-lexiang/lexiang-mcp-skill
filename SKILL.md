@@ -128,8 +128,8 @@ description: Use for Lexiang knowledge base tasks when the user explicitly menti
 **流程**：
 - 先校验写入目标是否明确（见"任务识别规则"）
 - Markdown 转换为页面 → `entry_import_content`
-- 文件原样上传或更新版本 → `file_apply_upload` → HTTP PUT → `file_commit_upload`
-- 单文件或批量上传优先使用 `scripts/upload-files.py`
+- 单文件原样上传或更新版本 → `file_apply_upload` → HTTP PUT → `file_commit_upload`
+- 批量上传优先使用 `scripts/upload-files.py`
 - 本地目录增量同步时，读取 `references/folder-sync.md` 并使用 `scripts/sync-folder.ts`
 - 更新已有文件时，先用 `entry_describe_entry` 读取 `target_id` 作为 `file_id`
 - 导入公众号内容为在线页面 → `file_create_hyperlink`
