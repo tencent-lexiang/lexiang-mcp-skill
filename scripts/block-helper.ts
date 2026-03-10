@@ -1,5 +1,5 @@
 /**
- * 云知 Block 操作辅助脚本
+ * 乐享 Block 操作辅助脚本
  * 简化 MCP 参数构建，支持批量更新和内容重组
  *
  * 使用方式:
@@ -386,7 +386,7 @@ export class BlockBuilder {
   } {
     const result = this.build();
     return {
-      tool: '云知.block_create_block_descendant',
+      tool: 'block_create_block_descendant',
       args: {
         entry_id: entryId,
         parent_block_id: parentBlockId,
@@ -469,7 +469,7 @@ export class UpdateBlocksBuilder {
    */
   toMCPCall(entryId: string): { tool: string; args: object } {
     return {
-      tool: '云知.block_update_blocks',
+      tool: 'block_update_blocks',
       args: {
         entry_id: entryId,
         updates: this.updates
@@ -510,7 +510,7 @@ export class ContentReorganizer {
    */
   toMCPCalls(entryId: string): Array<{ tool: string; args: object }> {
     return this.moveOperations.map(op => ({
-      tool: '云知.block_move_blocks',
+      tool: 'block_move_blocks',
       args: {
         entry_id: entryId,
         block_ids: op.blockIds,
@@ -518,147 +518,6 @@ export class ContentReorganizer {
         after: op.after
       }
     }));
-  }
-}
-
-// ============ Markdown 转换器 ============
-
-/**
- * Markdown 到 Block 转换器
- */
-export class MarkdownToBlocks {
-  private builder: BlockBuilder;
-  private theme: any;
-
-  constructor(theme?: any) {
-    this.builder = new BlockBuilder();
-    this.theme = theme;
-  }
-
-  /**
-   * 解析 Markdown 并生成 Block 结构
-   */
-  parse(markdown: string): { descendant: Block[]; children: string[] } {
-    const lines = markdown.split('\n');
-    let i = 0;
-
-    while (i < lines.length) {
-      const line = lines[i];
-      const trimmed = line.trim();
-
-      if (!trimmed) {
-        i++;
-        continue;
-      }
-
-      // 标题
-      const headingMatch = trimmed.match(/^(#{1,5})\s+(.+)$/);
-      if (headingMatch) {
-        const level = headingMatch[1].length as 1 | 2 | 3 | 4 | 5;
-        this.builder.heading(level, headingMatch[2]);
-        i++;
-        continue;
-      }
-
-      // 代码块
-      if (trimmed.startsWith('```')) {
-        const lang = trimmed.slice(3).trim() || 'plaintext';
-        const codeLines: string[] = [];
-        i++;
-        while (i < lines.length && !lines[i].trim().startsWith('```')) {
-          codeLines.push(lines[i]);
-          i++;
-        }
-        this.builder.codeBlock(codeLines.join('\n'), lang);
-        i++;
-        continue;
-      }
-
-      // 引用块 -> Callout
-      if (trimmed.startsWith('>')) {
-        const content = trimmed.slice(1).trim();
-        const calloutType = this.detectCalloutType(content);
-        const calloutConfig = this.theme?.callout?.[calloutType] || {
-          color: '#E3F2FD',
-          icon: '1f4a1'
-        };
-        this.builder.callout(calloutConfig.color, calloutConfig.icon, content);
-        i++;
-        continue;
-      }
-
-      // 无序列表
-      if (trimmed.match(/^[-*+]\s+/)) {
-        const items: string[] = [];
-        while (i < lines.length && lines[i].trim().match(/^[-*+]\s+/)) {
-          items.push(lines[i].trim().replace(/^[-*+]\s+/, ''));
-          i++;
-        }
-        this.builder.bulletedList(items);
-        continue;
-      }
-
-      // 有序列表
-      if (trimmed.match(/^\d+\.\s+/)) {
-        const items: string[] = [];
-        while (i < lines.length && lines[i].trim().match(/^\d+\.\s+/)) {
-          items.push(lines[i].trim().replace(/^\d+\.\s+/, ''));
-          i++;
-        }
-        this.builder.numberedList(items);
-        continue;
-      }
-
-      // 分割线
-      if (trimmed.match(/^[-*_]{3,}$/)) {
-        this.builder.divider();
-        i++;
-        continue;
-      }
-
-      // 普通段落
-      this.builder.paragraph(trimmed);
-      i++;
-    }
-
-    return this.builder.build();
-  }
-
-  /**
-   * 检测 Callout 类型
-   */
-  private detectCalloutType(content: string): string {
-    const mapping = this.theme?.semantic_mapping?.markdown_to_callout || {};
-    
-    for (const [pattern, type] of Object.entries(mapping)) {
-      if (content.startsWith(pattern.replace('> ', ''))) {
-        return type as string;
-      }
-    }
-
-    // 默认映射
-    if (content.includes('核心') || content.includes('重要')) return 'primary';
-    if (content.includes('提示') || content.includes('建议')) return 'tip';
-    if (content.includes('警告') || content.includes('注意')) return 'warning';
-    if (content.includes('成功') || content.includes('完成')) return 'success';
-    if (content.includes('错误') || content.includes('危险')) return 'error';
-
-    return 'primary';
-  }
-
-  /**
-   * 生成 MCP 调用
-   */
-  toMCPCall(entryId: string, markdown: string): { tool: string; args: object } {
-    const result = this.parse(markdown);
-    return {
-      tool: '云知.block_create_block_descendant',
-      args: {
-        entry_id: entryId,
-        descendant: result.descendant,
-        children: result.children
-      }
-    };
   }
 }
 

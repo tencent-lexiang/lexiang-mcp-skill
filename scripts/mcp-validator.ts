@@ -1,5 +1,5 @@
 /**
- * 云知 MCP 参数校验和修复工具
+ * 乐享 MCP 参数校验和修复工具
  * 用于检查和修复常见的 MCP 调用参数错误
  */
 
@@ -188,7 +188,7 @@ export function validateApplyUpload(
       errors.push({
         field: 'file_id',
         message: '【关键】更新文件时缺少 file_id',
-        suggestion: `更新文件必须提供 file_id。可通过 describe_entry 获取条目详情，返回的 target_id 即为 file_id${context.fileId ? `，当前文件的 file_id 应为: "${context.fileId}"` : ''}`,
+        suggestion: `更新文件必须提供 file_id。可通过 entry_describe_entry 获取条目详情，返回的 target_id 即为 file_id${context.fileId ? `，当前文件的 file_id 应为: "${context.fileId}"` : ''}`,
         severity: 'error'
       });
     }

@@ -1,6 +1,6 @@
 /**
- * 云知知识库文件夹同步脚本
- * 支持将本地文件夹增量同步到云知知识库
+ * 乐享知识库文件夹同步脚本
+ * 支持将本地文件夹增量同步到乐享知识库
  *
  * 使用方式:
  *   npx ts-node sync-folder.ts --local ./docs --entry-id <parent_entry_id> [--dry-run]
@@ -9,6 +9,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+
+const DEFAULT_STATE_FILE = '.lexiang-sync-state.json';
+const LEGACY_STATE_FILE = '.yunzhi-sync-state.json';
 
 // ============ 类型定义 ============
 
@@ -53,7 +56,7 @@ interface SyncAction {
   reason: string;
 }
 
-interface YunzhiEntry {
+interface LexiangEntry {
   id: string;
   name: string;
   entry_type: 'page' | 'folder' | 'file';
@@ -64,23 +67,23 @@ interface YunzhiEntry {
 // ============ MCP 调用封装 ============
 
 /**
- * 云知 MCP 调用包装器
+ * 乐享 MCP 调用包装器
  * 实际使用时通过 AI 助手的 MCP 调用能力执行
  */
-class YunzhiMCPClient {
+class LexiangMCPClient {
   /**
    * 生成 MCP 调用参数（供 AI 助手使用）
    */
   static listChildren(parentId: string): { tool: string; args: object } {
     return {
-      tool: '云知.entry_list_children',
+      tool: 'entry_list_children',
       args: { parent_id: parentId, limit: 100 }
     };
   }
 
   static describeEntry(entryId: string): { tool: string; args: object } {
     return {
-      tool: '云知.entry_describe_entry',
+      tool: 'entry_describe_entry',
       args: { entry_id: entryId }
     };
   }
@@ -91,7 +94,7 @@ class YunzhiMCPClient {
     entryType: 'page' | 'folder';
   }): { tool: string; args: object } {
     return {
-      tool: '云知.entry_create_entry',
+      tool: 'entry_create_entry',
       args: {
         parent_entry_id: params.parentEntryId,
         name: params.name,
@@ -108,7 +111,7 @@ class YunzhiMCPClient {
     fileId?: string;
   }): { tool: string; args: object } {
     return {
-      tool: '云知.file_apply_upload',
+      tool: 'file_apply_upload',
       args: {
         parent_entry_id: params.parentEntryId,
         name: params.name,
@@ -122,7 +125,7 @@ class YunzhiMCPClient {
 
   static commitUpload(sessionId: string): { tool: string; args: object } {
     return {
-      tool: '云知.file_commit_upload',
+      tool: 'file_commit_upload',
       args: { session_id: sessionId }
     };
   }
@@ -134,7 +137,7 @@ class YunzhiMCPClient {
     contentType: 'markdown' | 'html';
   }): { tool: string; args: object } {
     return {
-      tool: '云知.entry_import_content',
+      tool: 'entry_import_content',
       args: {
         parent_id: params.parentId,
         name: params.name,
@@ -264,8 +267,21 @@ function scanLocalDirectory(
  * 加载同步状态
  */
 function loadSyncState(stateFile: string): SyncState {
-  if (fs.existsSync(stateFile)) {
-    const content = fs.readFileSync(stateFile, 'utf-8');
+  let effectiveStateFile = stateFile;
+
+  if (
+    stateFile === DEFAULT_STATE_FILE &&
+    !fs.existsSync(stateFile) &&
+    fs.existsSync(LEGACY_STATE_FILE)
+  ) {
+    const legacyContent = fs.readFileSync(LEGACY_STATE_FILE, 'utf-8');
+    fs.writeFileSync(DEFAULT_STATE_FILE, legacyContent);
+    effectiveStateFile = DEFAULT_STATE_FILE;
+    console.log(`   已迁移旧状态文件: ${LEGACY_STATE_FILE} -> ${DEFAULT_STATE_FILE}`);
+  }
+
+  if (fs.existsSync(effectiveStateFile)) {
+    const content = fs.readFileSync(effectiveStateFile, 'utf-8');
     return JSON.parse(content);
   }
   return {
@@ -290,7 +306,7 @@ function saveSyncState(stateFile: string, state: SyncState): void {
 function computeSyncActions(
   localFiles: LocalFile[],
   syncState: SyncState,
-  remoteEntries: Map<string, YunzhiEntry>
+  remoteEntries: Map<string, LexiangEntry>
 ): SyncAction[] {
   const actions: SyncAction[] = [];
 
@@ -364,7 +380,7 @@ function generateMCPCalls(
       case 'create_folder':
         calls.push({
           action,
-          mcpCall: YunzhiMCPClient.createEntry({
+          mcpCall: LexiangMCPClient.createEntry({
             parentEntryId,
             name,
             entryType: 'folder'
@@ -387,7 +403,7 @@ function generateMCPCalls(
             // Markdown 优先使用文件上传方式（便于后续版本更新）
             calls.push({
               action,
-              mcpCall: YunzhiMCPClient.applyUpload({
+              mcpCall: LexiangMCPClient.applyUpload({
                 parentEntryId,
                 name,
                 mimeType: 'text/markdown',
@@ -398,7 +414,7 @@ function generateMCPCalls(
           } else {
             calls.push({
               action,
-              mcpCall: YunzhiMCPClient.applyUpload({
+              mcpCall: LexiangMCPClient.applyUpload({
                 parentEntryId,
                 name,
                 mimeType: getMimeType(action.localPath),
@@ -416,7 +432,7 @@ function generateMCPCalls(
           const stats = fs.statSync(updateFile.absolutePath);
           calls.push({
             action,
-            mcpCall: YunzhiMCPClient.applyUpload({
+            mcpCall: LexiangMCPClient.applyUpload({
               parentEntryId: action.entryId!, // 更新时使用当前文件的 entry_id
               name: path.basename(action.localPath),
               mimeType: getMimeType(action.localPath),
@@ -455,7 +471,7 @@ export async function syncFolder(config: SyncConfig): Promise<{
   console.log(`   上次同步: ${syncState.lastSyncAt || '从未同步'}`);
 
   // 3. 计算同步操作
-  const remoteEntries = new Map<string, YunzhiEntry>();
+  const remoteEntries = new Map<string, LexiangEntry>();
   // 注意：实际执行时需要先调用 list_children 获取远程条目
   const actions = computeSyncActions(localFiles, syncState, remoteEntries);
 
@@ -499,13 +515,14 @@ function parseArgs(): SyncConfig {
     localPath: '',
     parentEntryId: '',
     dryRun: false,
-    syncStateFile: '.yunzhi-sync-state.json',
+    syncStateFile: DEFAULT_STATE_FILE,
     ignoredPatterns: [
       'node_modules/',
       '.git/',
       '.DS_Store',
       '*.log',
-      '.yunzhi-sync-state.json'
+      DEFAULT_STATE_FILE,
+      LEGACY_STATE_FILE
     ],
     supportedExtensions: ['.md', '.markdown', '.txt', '.json', '.pdf', '.doc', '.docx']
   };
@@ -544,4 +561,4 @@ if (require.main === module) {
   syncFolder(config).catch(console.error);
 }
 
-export { SyncConfig, SyncState, SyncAction, LocalFile, YunzhiMCPClient };
+export { SyncConfig, SyncState, SyncAction, LocalFile, LexiangMCPClient };

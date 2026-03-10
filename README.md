@@ -31,4 +31,4 @@ bash setup.sh
 
 ## 使用说明
 
-详细工具文档请参考 `lexiang-base/SKILL.md`
+详细工具文档请参考 `SKILL.md`

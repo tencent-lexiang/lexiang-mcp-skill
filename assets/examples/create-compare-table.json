@@ -1,6 +1,7 @@
 {
-  "_description": "创建对比表格示例 - 演示传统方式 vs 新方案的对比效果",
-  "_usage": "MCP Tool: 云知.block_create_block_descendant",
+  "_description": "在线文档结构示例：对比表格骨架，用于示意如何用 block_create_block_descendant 创建表格型页面结构",
+  "_usage": "业务工具：block_create_block_descendant",
+  "_purpose": "仅用于示意在线文档结构骨架；使用前需要替换 entry_id、文案和表格细节",
 
   "entry_id": "{entry_id}",
   "descendant": [

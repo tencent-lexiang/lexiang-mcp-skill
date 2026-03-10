@@ -1,6 +1,6 @@
 """
-云知知识库文件上传脚本
-支持并行上传文件到云知，使用预签名 URL
+乐享知识库文件上传脚本
+支持并行上传文件到乐享，使用预签名 URL
 
 使用方式:
     python upload-files.py --files file1.md file2.pdf --entry-id <parent_entry_id>
@@ -85,8 +85,8 @@ def get_mime_type(file_path: str) -> str:
     return custom_types.get(ext, 'application/octet-stream')
 
 
-class YunzhiUploader:
-    """云知文件上传器"""
+class LexiangUploader:
+    """乐享文件上传器"""
     
     def __init__(self, parallel: int = 3):
         self.parallel = parallel
@@ -109,7 +109,7 @@ class YunzhiUploader:
             note = f'新建文件: {task.file_name}'
         
         return MCPCallResult(
-            tool='云知.file_apply_upload',
+            tool='file_apply_upload',
             args=args,
             note=note
         )
@@ -117,7 +117,7 @@ class YunzhiUploader:
     def generate_commit_upload_call(self, session_id: str, file_name: str) -> MCPCallResult:
         """生成确认上传的 MCP 调用参数"""
         return MCPCallResult(
-            tool='云知.file_commit_upload',
+            tool='file_commit_upload',
             args={'session_id': session_id},
             note=f'确认上传: {file_name}'
         )
@@ -224,7 +224,7 @@ with open("{task.local_path}", "rb") as f:
                 'step': f'{i}.3',
                 'description': f'确认上传完成: {task.file_name}',
                 'mcp_call': {
-                    'tool': '云知.file_commit_upload',
+                    'tool': 'file_commit_upload',
                     'args': {'session_id': '<从 step {}.1 返回值获取>'.format(i)}
                 }
             })
@@ -261,7 +261,7 @@ def print_upload_plan(plan: Dict):
     """打印上传计划"""
     print(f'''
 ╔══════════════════════════════════════════════════════════════════╗
-║                      云知文件上传计划                              ║
+║                      乐享文件上传计划                              ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║  文件数量: {plan['total_files']:<10}  总大小: {format_size(plan['total_size']):<15} ║
 ║  并行数: {plan['parallel']:<12}                                   ║
@@ -281,7 +281,7 @@ def print_upload_plan(plan: Dict):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='云知知识库文件上传工具')
+    parser = argparse.ArgumentParser(description='乐享知识库文件上传工具')
     parser.add_argument('--files', nargs='+', help='要上传的文件列表')
     parser.add_argument('--folder', help='要上传的文件夹')
     parser.add_argument('--entry-id', required=True, help='目标父节点 entry_id')
@@ -292,7 +292,7 @@ def main():
     
     args = parser.parse_args()
     
-    uploader = YunzhiUploader(parallel=args.parallel)
+    uploader = LexiangUploader(parallel=args.parallel)
     tasks: List[UploadTask] = []
     
     if args.folder:
