@@ -1,4 +1,4 @@
-# 乐享 MCP - ClawHub 外部版本
+# 乐享 MCP - ClawHub 版本
 
 > 适用于外部 ClawHub / mcporter 用户
 
