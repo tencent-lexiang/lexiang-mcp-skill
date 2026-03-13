@@ -8,9 +8,6 @@
 
 **适用场景**: 功能推广、工具介绍、方案宣传
 
-**关联骨架**：
-- 对比表格段落可参考 `assets/examples/create-compare-table.json`
-
 ```
 1. [callout:primary] 一句话核心价值
 2. [h2] 你是否遇到这些问题？
@@ -39,10 +36,6 @@
 
 **适用场景**: API 文档、开发指南、技术规范
 
-**关联骨架**：
-- 完整页面骨架可参考 `assets/examples/create-tech-doc.json`
-- 参数对比表格结构可参考 `assets/examples/create-compare-table.json`
-
 ```
 1. [h1] 文档标题
 2. [h2] 概述
@@ -66,9 +59,6 @@
 
 **适用场景**: 使用教程、操作手册、配置指南
 
-**关联骨架**：
-- 可优先参考 `assets/examples/create-tech-doc.json`，再按步骤型文档改造
-
 ```
 1. [callout:primary] 本指南帮你实现 XXX
 2. [h2] 前置准备
@@ -83,3 +73,15 @@
 5. [h2] 常见问题
 6. [callout:success] 完成确认
 ```
+
+---
+
+## Callout 语义映射
+
+| 关键词模式 | Callout 类型 | 配色 |
+|-----------|-------------|------|
+| 核心/重要/价值 | primary | #E3F2FD |
+| 提示/建议/tips | tip | #FFF3E0 |
+| 成功/完成/搞定 | success | #E8F5E9 |
+| 警告/注意/风险 | warning | #FFF8E1 |
+| 错误/禁止/危险 | error | #FFEBEE |

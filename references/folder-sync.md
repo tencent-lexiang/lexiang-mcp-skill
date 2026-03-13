@@ -2,21 +2,6 @@
 
 将本地文件夹（如项目文档目录）增量同步到乐享知识库，保持目录结构。
 
-## 何时使用脚本
-
-只有在“本地目录需要增量同步到知识库”时使用 `scripts/sync-folder.ts`。
-
-不要在以下场景使用：
-- 单文件上传
-- 单次创建页面
-- 单次更新页面内容
-
-脚本作用：
-- 扫描本地目录
-- 读取同步状态
-- 生成同步计划
-- 输出业务工具名和参数，供后续 `call_tool` 执行
-
 ## 使用脚本
 
 ```bash
@@ -43,8 +28,6 @@ npx ts-node scripts/sync-folder.ts --local ./docs --entry-id <parent_entry_id> [
 
 位置: `.lexiang-sync-state.json`
 
-如果历史上使用过旧状态文件名，脚本会在首次读取时自动迁移到新文件名。
-
 ```json
 {
   "version": "1.0.0",
@@ -67,7 +50,7 @@ npx ts-node scripts/sync-folder.ts --local ./docs --entry-id <parent_entry_id> [
 ### 创建文件夹
 
 ```
-业务工具：`entry_create_entry`
+MCP Tool: lexiang.entry_create_entry
 Arguments: {
   "parent_entry_id": "<父节点 entry_id>",
   "name": "子目录名",
@@ -78,7 +61,7 @@ Arguments: {
 ### 上传文件 (3步)
 
 ```
-Step 1: `file_apply_upload`
+Step 1: lexiang.file_apply_upload
 Arguments: {
   "parent_entry_id": "<父节点 entry_id>",
   "name": "document.md",
@@ -89,7 +72,7 @@ Arguments: {
 
 Step 2: HTTP PUT 上传到 upload_url
 
-Step 3: `file_commit_upload`
+Step 3: lexiang.file_commit_upload
 Arguments: { "session_id": "xxx" }
 ```
 

@@ -2,16 +2,10 @@
 
 使用 MoveBlocks 调整文档结构，将块移动到新位置。
 
-前置条件：
-- 已确认目标页面 `entry_id`
-- 已确认待移动的 `block_id` 列表
-- 已确认目标父节点 `parent_block_id`
-- 需要先检查结构时，先读 `references/page-edit.md`
-
 ## 移动块 API
 
 ```
-业务工具：`block_move_blocks`
+MCP Tool: lexiang.block_move_blocks
 Arguments: {
   "entry_id": "<entry_id>",
   "block_ids": ["block_1", "block_2", "block_3"],
@@ -40,7 +34,7 @@ Arguments: {
 ### 将分散内容整合到同一章节
 
 ```
-业务工具：`block_move_blocks`
+MCP Tool: lexiang.block_move_blocks
 Arguments: {
   "entry_id": "doc123",
   "block_ids": ["para_1", "para_2", "list_1"],
@@ -52,13 +46,28 @@ Arguments: {
 ### 调整段落顺序
 
 ```
-业务工具：`block_move_blocks`
+MCP Tool: lexiang.block_move_blocks
 Arguments: {
   "entry_id": "doc123",
   "block_ids": ["para_3"],
   "parent_block_id": "root_block",
   "after": "para_1"
 }
+```
+
+---
+
+## 使用辅助工具
+
+```typescript
+import { ContentReorganizer } from './scripts/block-helper';
+
+const reorganizer = new ContentReorganizer()
+  .move(['para_1', 'para_2'], 'section_h2', 'intro_callout')
+  .move(['list_1', 'list_2'], 'section_h2');
+
+const mcpCalls = reorganizer.toMCPCalls(entryId);
+// 返回多个 MCP 调用
 ```
 
 ---
@@ -75,4 +84,18 @@ Arguments: {
    - divider（分割线）
    - mermaid、plantuml（图表块）
 3. 移动操作会保持块的子孙结构
-4. 程序化构造移动计划时，可使用 `scripts/block-helper.ts` 中的 `ContentReorganizer`
+4. 建议移动前先获取文档结构确认 block_id
+
+---
+
+## 获取文档结构
+
+```
+MCP Tool: lexiang.block_list_block_children
+Arguments: {
+  "entry_id": "<entry_id>",
+  "with_descendants": true
+}
+```
+
+返回完整的块树结构，包含所有 block_id。
