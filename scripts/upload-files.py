@@ -109,7 +109,7 @@ class LexiangUploader:
             note = f'新建文件: {task.file_name}'
         
         return MCPCallResult(
-            tool='file_apply_upload',
+            tool='lexiang.file_apply_upload',
             args=args,
             note=note
         )
@@ -117,7 +117,7 @@ class LexiangUploader:
     def generate_commit_upload_call(self, session_id: str, file_name: str) -> MCPCallResult:
         """生成确认上传的 MCP 调用参数"""
         return MCPCallResult(
-            tool='file_commit_upload',
+            tool='lexiang.file_commit_upload',
             args={'session_id': session_id},
             note=f'确认上传: {file_name}'
         )
@@ -125,12 +125,17 @@ class LexiangUploader:
     async def upload_file_async(self, upload_url: str, file_path: str, mime_type: str) -> bool:
         """异步上传文件到预签名 URL"""
         if not HAS_AIOHTTP:
-            return self.upload_file_sync(upload_url, file_path, mime_type)
+            # 使用线程池执行同步上传，避免阻塞事件循环
+            loop = asyncio.get_event_loop()
+            return await loop.run_in_executor(
+                None, self.upload_file_sync, upload_url, file_path, mime_type
+            )
+        
+        # 使用线程池异步读取文件，避免同步 IO 阻塞事件循环
+        loop = asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, Path(file_path).read_bytes)
         
         async with aiohttp.ClientSession() as session:
-            with open(file_path, 'rb') as f:
-                data = f.read()
-            
             headers = {'Content-Type': mime_type}
             async with session.put(upload_url, data=data, headers=headers) as response:
                 return response.status in (200, 201)
@@ -224,7 +229,7 @@ with open("{task.local_path}", "rb") as f:
                 'step': f'{i}.3',
                 'description': f'确认上传完成: {task.file_name}',
                 'mcp_call': {
-                    'tool': 'file_commit_upload',
+                    'tool': 'lexiang.file_commit_upload',
                     'args': {'session_id': '<从 step {}.1 返回值获取>'.format(i)}
                 }
             })
@@ -245,7 +250,18 @@ with open("{task.local_path}", "rb") as f:
                 return session, success
         
         tasks = [upload_with_semaphore(s) for s in sessions]
-        return await asyncio.gather(*tasks)
+        # return_exceptions=True 确保部分失败时其他结果不丢失
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # 将异常转换为 (session, False) 格式，保持返回值结构一致
+        normalized = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                session = sessions[i]
+                session.task.error = str(result)
+                normalized.append((session, False))
+            else:
+                normalized.append(result)
+        return normalized
 
 
 def format_size(size: int) -> str:

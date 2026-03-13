@@ -10,9 +10,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 
-const DEFAULT_STATE_FILE = '.lexiang-sync-state.json';
-const LEGACY_STATE_FILE = '.yunzhi-sync-state.json';
-
 // ============ 类型定义 ============
 
 interface SyncConfig {
@@ -76,14 +73,14 @@ class LexiangMCPClient {
    */
   static listChildren(parentId: string): { tool: string; args: object } {
     return {
-      tool: 'entry_list_children',
+      tool: 'lexiang.entry_list_children',
       args: { parent_id: parentId, limit: 100 }
     };
   }
 
   static describeEntry(entryId: string): { tool: string; args: object } {
     return {
-      tool: 'entry_describe_entry',
+      tool: 'lexiang.entry_describe_entry',
       args: { entry_id: entryId }
     };
   }
@@ -94,7 +91,7 @@ class LexiangMCPClient {
     entryType: 'page' | 'folder';
   }): { tool: string; args: object } {
     return {
-      tool: 'entry_create_entry',
+      tool: 'lexiang.entry_create_entry',
       args: {
         parent_entry_id: params.parentEntryId,
         name: params.name,
@@ -111,7 +108,7 @@ class LexiangMCPClient {
     fileId?: string;
   }): { tool: string; args: object } {
     return {
-      tool: 'file_apply_upload',
+      tool: 'lexiang.file_apply_upload',
       args: {
         parent_entry_id: params.parentEntryId,
         name: params.name,
@@ -125,7 +122,7 @@ class LexiangMCPClient {
 
   static commitUpload(sessionId: string): { tool: string; args: object } {
     return {
-      tool: 'file_commit_upload',
+      tool: 'lexiang.file_commit_upload',
       args: { session_id: sessionId }
     };
   }
@@ -137,7 +134,7 @@ class LexiangMCPClient {
     contentType: 'markdown' | 'html';
   }): { tool: string; args: object } {
     return {
-      tool: 'entry_import_content',
+      tool: 'lexiang.entry_import_content',
       args: {
         parent_id: params.parentId,
         name: params.name,
@@ -267,21 +264,8 @@ function scanLocalDirectory(
  * 加载同步状态
  */
 function loadSyncState(stateFile: string): SyncState {
-  let effectiveStateFile = stateFile;
-
-  if (
-    stateFile === DEFAULT_STATE_FILE &&
-    !fs.existsSync(stateFile) &&
-    fs.existsSync(LEGACY_STATE_FILE)
-  ) {
-    const legacyContent = fs.readFileSync(LEGACY_STATE_FILE, 'utf-8');
-    fs.writeFileSync(DEFAULT_STATE_FILE, legacyContent);
-    effectiveStateFile = DEFAULT_STATE_FILE;
-    console.log(`   已迁移旧状态文件: ${LEGACY_STATE_FILE} -> ${DEFAULT_STATE_FILE}`);
-  }
-
-  if (fs.existsSync(effectiveStateFile)) {
-    const content = fs.readFileSync(effectiveStateFile, 'utf-8');
+  if (fs.existsSync(stateFile)) {
+    const content = fs.readFileSync(stateFile, 'utf-8');
     return JSON.parse(content);
   }
   return {
@@ -515,14 +499,13 @@ function parseArgs(): SyncConfig {
     localPath: '',
     parentEntryId: '',
     dryRun: false,
-    syncStateFile: DEFAULT_STATE_FILE,
+    syncStateFile: '.lexiang-sync-state.json',
     ignoredPatterns: [
       'node_modules/',
       '.git/',
       '.DS_Store',
       '*.log',
-      DEFAULT_STATE_FILE,
-      LEGACY_STATE_FILE
+      '.lexiang-sync-state.json'
     ],
     supportedExtensions: ['.md', '.markdown', '.txt', '.json', '.pdf', '.doc', '.docx']
   };

@@ -2,15 +2,10 @@
 
 批量更新已有文档中的多个块内容或样式。
 
-前置条件：
-- 已确认目标页面 `entry_id`
-- 已确认要更新的 `block_id`
-- 需要先检查结构时，先读 `references/page-edit.md`
-
 ## 批量更新 API
 
 ```
-业务工具：`block_update_blocks`
+MCP Tool: lexiang.block_update_blocks
 Arguments: {
   "entry_id": "<entry_id>",
   "updates": {
@@ -92,7 +87,7 @@ Arguments: {
 ## 完整示例
 
 ```
-业务工具：`block_update_blocks`
+MCP Tool: lexiang.block_update_blocks
 Arguments: {
   "entry_id": "abc123",
   "updates": {
@@ -117,8 +112,26 @@ Arguments: {
 
 ---
 
+## 使用辅助工具
+
+```typescript
+import { UpdateBlocksBuilder } from './scripts/block-helper';
+
+const updater = new UpdateBlocksBuilder()
+  .updateText('block_1', '新标题', { bold: true })
+  .updateStyle('block_2', { background_color: '#E8F5E9' })
+  .updateTask('block_3', true)
+  .insertText('block_4', 0, '前缀: ')
+  .deleteText('block_5', 0, 5);
+
+const mcpCall = updater.toMCPCall(entryId);
+// { tool: 'lexiang.block_update_blocks', args: {...} }
+```
+
+---
+
 ## 注意事项
 
 1. 每个块在单次请求中只能执行一种更新操作
 2. 如需同时更新文本和样式，使用 `update_text` 并在 text.style 中指定样式
-3. 程序化构造更新参数时，可使用 `scripts/block-helper.ts` 中的 `UpdateBlocksBuilder`
+3. 更新前需先获取 block_id，可通过 `list_block_children` 获取

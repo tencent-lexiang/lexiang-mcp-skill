@@ -1,8 +1,4 @@
 {
-  "_description": "在线文档结构示例：技术文档骨架，用于示意如何用 block_create_block_descendant 创建可编辑页面结构",
-  "_usage": "业务工具：block_create_block_descendant",
-  "_purpose": "仅用于示意在线文档结构骨架；使用前需要替换 entry_id、文案和块细节",
-
   "entry_id": "{entry_id}",
   "descendant": [
     {

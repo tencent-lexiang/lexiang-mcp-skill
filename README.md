@@ -1,4 +1,4 @@
-# 乐享 MCP - ClawHub 版本
+# 乐享 MCP - ClawHub 外部版本
 
 > 适用于外部 ClawHub / mcporter 用户
 
@@ -31,4 +31,4 @@ bash setup.sh
 
 ## 使用说明
 
-详细工具文档请参考 `SKILL.md`
+详细工具文档请参考 `lexiang-base/SKILL.md`
