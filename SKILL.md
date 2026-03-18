@@ -2,24 +2,7 @@
 name: lexiang-knowledge-base
 description: "用于访问乐享知识库平台的专用 skill。当用户明确提到「乐享」「lexiang」「知识库」「知识管理」「文档管理」等关键词，或用户提供的链接 host 为 lexiangla.com，应优先调用本 skill。若用户只说「知识」「文档」等泛化词汇但未指定平台，应先询问是否指乐享平台，确认后再调用。本 skill 支持：获取文档内容与元数据、搜索文档内容、查询知识库与目录结构、创建/编辑/移动文档、管理标签与评论、上传文件及维护附件等知识库操作能力。"
 homepage: https://lexiangla.com
-metadata:
-  openclaw:
-    category: "productivity"
-    emoji: "📚"
-  credentials:
-    - name: LEXIANG_TOKEN
-      description: "乐享 MCP 访问令牌，格式 lxmcp_xxx，从 https://lexiangla.com/mcp 获取"
-      required: true
-    - name: COMPANY_FROM
-      description: "企业标识符，从 https://lexiangla.com/mcp 获取"
-      required: true
-  env_vars:
-    - name: LEXIANG_TOKEN
-      description: "乐享 MCP 访问令牌"
-      required: true
-    - name: COMPANY_FROM
-      description: "企业标识符"
-      required: true
+metadata: { "openclaw": { "category": "productivity", "emoji": "📚", "requires": { "env": ["LEXIANG_TOKEN", "COMPANY_FROM"] } } }
 ---
 
 # 乐享 MCP 服务
@@ -458,8 +441,9 @@ curl -s -X POST -H "Content-Type: application/json" \
   "<MCP_ENDPOINT_URL>"
 ```
 
-> MCP 端点 URL 格式：`https://mcp.lexiang-app.com/mcp?company_from=<COMPANY>&access_token=<TOKEN>&preset=meta`
-> 如果不知道 URL 参数，检查 `~/.openclaw/workspace/skills/lexiang-knowledge-base/mcp.json`
+> MCP 端点 URL 格式：`https://mcp.lexiang-app.com/mcp?company_from=<COMPANY>&preset=meta`
+> 认证方式：通过 HTTP Header `Authorization: Bearer <TOKEN>` 传递令牌（参见 mcp.json 中的 headers 配置）
+> 如果不知道具体参数，检查 `~/.openclaw/workspace/skills/lexiang-knowledge-base/mcp.json`
 
 如果三种方式都失败 → 停止调用，报告环境未接入 lexiang MCP。
 
@@ -493,13 +477,9 @@ curl -s -X POST -H "Content-Type: application/json" \
 
 ### 配置方式
 
-#### 方式1：运行 setup.sh（推荐）
+#### 方式1：自动配置（推荐）
 
-```bash
-bash setup.sh
-```
-
-脚本会交互式引导你完成配置。
+请阅读 `setup.md` 中的步骤说明，按指引完成配置。该文档适用于所有操作系统（macOS / Linux / Windows）。
 
 #### 方式2：环境变量
 
@@ -521,8 +501,11 @@ export LEXIANG_TOKEN="lxmcp_YOUR_TOKEN_HERE"
     "mcpServers": {
         "lexiang": {
             "enabled": true,
-            "url": "https://mcp.lexiang-app.com/mcp?company_from=${COMPANY_FROM}&access_token=${LEXIANG_TOKEN}&preset=meta",
-            "transportType": "streamable-http"
+            "url": "https://mcp.lexiang-app.com/mcp?company_from=${COMPANY_FROM}&preset=meta",
+            "transportType": "streamable-http",
+            "headers": {
+                "Authorization": "Bearer ${LEXIANG_TOKEN}"
+            }
         }
     }
 }
@@ -587,18 +570,18 @@ curl -s -X POST -H "Content-Type: application/json" \
 | 直接调用元工具无反应/报错 | 跳到 mcporter 方式 |
 | `mcporter: command not found` | 跳到 HTTP 方式 |
 | HTTP 调用 `"method not found"` | method 必须是 `"tools/call"`，不是 `"call_tool"` |
-| 三种方式都失败 | 检查 mcp.json 配置是否正确，确保 URL 包含 `company_from`、`access_token` 和 `preset=meta` |
+| 三种方式都失败 | 检查 mcp.json 配置是否正确，确保 URL 包含 `company_from` 和 `preset=meta`，且 headers 中包含 `Authorization` |
 | 参数报错 | 执行 `get_tool_schema(tool_name="xxx")` 获取最新参数定义 |
 
 ### 认证方式
 
-支持以下三种认证方式（任选其一）：
+支持以下三种认证方式（推荐 Bearer Authorization）：
 
-| 方式 | 说明 | 示例 |
-|------|------|------|
-| **OAuth 2.0** | 交互式授权，适合桌面客户端 | 客户端自动引导授权流程 |
-| **URL Query Parameter** | 在 URL 中传递 token | `?access_token=lxmcp_xxx` |
-| **Bearer Authorization** | 在 HTTP Header 中传递 | `Authorization: Bearer lxmcp_xxx` |
+| 方式 | 说明 | 示例 | 推荐 |
+|------|------|------|:----:|
+| **Bearer Authorization** | 在 HTTP Header 中传递（安全） | `Authorization: Bearer lxmcp_xxx` | ✅ |
+| **OAuth 2.0** | 交互式授权，适合桌面客户端 | 客户端自动引导授权流程 | ✅ |
+| **URL Query Parameter** | 在 URL 中传递 token（不推荐，token 可能泄露到日志） | `?access_token=lxmcp_xxx` | ⚠️ |
 
 ---
 

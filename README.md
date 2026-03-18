@@ -23,11 +23,7 @@ export LEXIANG_TOKEN="lxmcp_YOUR_TOKEN_HERE"
 
 ## 快速配置
 
-运行 setup.sh 进行交互式配置：
-
-```bash
-bash setup.sh
-```
+阅读 `setup.md` 中的配置步骤，按指引完成配置。适用于所有操作系统（macOS / Linux / Windows）。
 
 ## 使用说明
 
