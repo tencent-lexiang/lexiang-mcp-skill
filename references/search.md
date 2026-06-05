@@ -1,13 +1,8 @@
----
-name: lexiang-search
-description: "乐享知识库搜索与内容阅读。当用户提到「乐享」「知识库」「lexiang」并包含搜索/查找/阅读意图时使用。典型触发：「帮我找一下…」「搜索一下…」「查一下有没有…」「看看这个知识库里有什么」「找找关于 XX 的文档」「读一下这个页面」「打开这个链接」。也适用于用户提供 lexiangla.com 链接、/pages/、/spaces/ 路径需要读取内容的场景。支持实体召回（搜索 space、entry、team）、RAG 切片召回（语义检索+重排，用于回答问题）、知识库浏览、目录结构导航、文档内容读取与解析。"
----
-
 # 乐享搜索与浏览
 
-> **基础知识**：数据模型、URL 规则、工具发现方式见 `base/SKILL.md`。
-> **前置条件**：本 skill 需要已配置乐享 MCP 连接。如未配置，请先使用 `setup/SKILL.md`。
-> **遇到 401 错误**：不要重试，读取 `setup/SKILL.md` 引导用户续期（点击续期按钮即可恢复，无需重新配置）。
+> **基础知识**：数据模型、URL 规则、工具发现方式见 `references/base.md`。
+> **前置条件**：本 skill 需要已配置乐享 MCP 连接。如未配置，请先读取 `references/setup.md`。
+> **遇到 401 错误**：不要重试，读取 `references/setup.md` 引导用户续期（点击续期按钮即可恢复，无需重新配置）。
 
 ---
 
@@ -50,7 +45,7 @@ description: "乐享知识库搜索与内容阅读。当用户提到「乐享」
 
 ### 搜索结果链接格式
 
-链接拼接规则见 `base/SKILL.md`（`{domain}` 来源、三级域名判断、`company_from` 获取优先级）。
+链接拼接规则见 `references/base.md`（`{domain}` 来源、三级域名判断、`company_from` 获取优先级）。
 
 根据返回的 `target_type` 拼接路径部分（搜索独有）：
 
@@ -82,4 +77,4 @@ description: "乐享知识库搜索与内容阅读。当用户提到「乐享」
 | 文档 | 说明 |
 |------|------|
 | `references/common-errors.md` | 常见错误排查 |
-| `base/SKILL.md` | 数据模型、URL 规则、工具发现方式 |
+| `references/base.md` | 数据模型、URL 规则、工具发现方式 |

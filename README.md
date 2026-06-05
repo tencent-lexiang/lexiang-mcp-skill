@@ -55,7 +55,7 @@ lexiang-skills/
 ├── files/
 │   └── SKILL.md         # 二进制文件上传/下载
 ├── connectors/
-│   └── SKILL.md         # 腾讯会议录制导入、iWiki 迁移
+│   └── SKILL.md         # 腾讯会议录制导入
 ├── references/           # 详细参考文档（11 份）
 └── scripts/              # 辅助脚本
 ```
@@ -71,7 +71,7 @@ lexiang-skills/
 | `writer` | 创建文档、保存内容、导入公众号文章 |
 | `blocks` | 修改已有页面、追加内容、调整排版 |
 | `files` | 上传 PDF/Word/图片等二进制文件 |
-| `connectors` | 导入腾讯会议录制、迁移 iWiki 页面 |
+| `connectors` | 导入腾讯会议录制 |
 
 ---
 

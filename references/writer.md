@@ -1,14 +1,9 @@
----
-name: lexiang-writer
-description: "乐享知识库文档创建与写入。当用户提到「乐享」「知识库」「lexiang」并包含创建/写入/新建/导入意图时使用。典型触发：「写到乐享」「创建一个文档」「帮我新建一个页面」「把这段内容发到乐享」「保存到知识库」「导入到乐享」「帮我在 XX 知识库下建个文档」「把这篇文章存到乐享」。也适用于用户提供 lexiangla.com 链接并要求写入新内容、导入公众号文章到知识库的场景。支持 Markdown/HTML 导入创建文档、创建页面与文件夹、外部链接导入。注意：上传 PDF/Word/图片等文件请使用 files/SKILL.md。"
----
-
 # 乐享文档写入
 
-> **基础知识**：数据模型、URL 规则、写入安全规则完整版见 `base/SKILL.md`。
-> **前置条件**：本 skill 需要已配置乐享 MCP 连接。如未配置，请先读取 `setup/SKILL.md`。
-> **遇到 401 错误**：不要重试，读取 `setup/SKILL.md` 引导用户续期（点击续期按钮即可恢复，无需重新配置）。
-> **安全规则**（完整版见 `base/SKILL.md`）：禁止遍历猜测写入目标；必须有明确 URL/ID/确认，或 `whoami` 返回个人知识库时可直接写入个人知识库
+> **基础知识**：数据模型、URL 规则、写入安全规则完整版见 `references/base.md`。
+> **前置条件**：本 skill 需要已配置乐享 MCP 连接。如未配置，请先读取 `references/setup.md`。
+> **遇到 401 错误**：不要重试，读取 `references/setup.md` 引导用户续期（点击续期按钮即可恢复，无需重新配置）。
+> **安全规则**（完整版见 `references/base.md`）：禁止遍历猜测写入目标；必须有明确 URL/ID/确认，或 `whoami` 返回个人知识库时可直接写入个人知识库
 
 ---
 
@@ -103,4 +98,4 @@ description: "乐享知识库文档创建与写入。当用户提到「乐享」
 | `references/markdown-import.md` | Markdown 导入详解 |
 | `references/doc-templates.md` | 文档类型与大纲模板（推广/技术/操作指南） |
 | `references/common-errors.md` | 常见错误排查 |
-| `base/SKILL.md` | 数据模型、写入安全规则完整版 |
+| `references/base.md` | 数据模型、写入安全规则完整版 |
