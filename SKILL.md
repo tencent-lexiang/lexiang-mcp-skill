@@ -1,7 +1,7 @@
 ---
 name: lexiang-knowledge-base
-version: 2.1.0
-description: "乐享知识库 MCP 全功能 Skill。当用户提到「乐享」「知识库」「个人知识库」「我的知识库」「lexiang」，或提供 lexiangla.com 链接，或涉及知识库的搜索/写入/编辑/文件/配置等操作时使用。"
+version: 2.2.0
+description: "乐享知识库 MCP 全功能 Skill。当用户提到「乐享」「知识库」「个人知识库」「我的知识库」「lexiang」，或提供 lexiangla.com 链接，或涉及知识库的搜索/写入/编辑/文件/配置/评论/草稿/智能表格等操作时使用。"
 ---
 
 # 乐享知识库 MCP Skill
@@ -58,6 +58,9 @@ description: "乐享知识库 MCP 全功能 Skill。当用户提到「乐享」�
 | 编辑已有页面 / Block 操作 | `references/blocks.md` | 「修改这个页面」「加个标题」「删掉这段」「在 /pages/xxx 里…」 |
 | 上传/下载文件（PDF/Word/图片等） | `references/files.md` | 「传个 PDF」「上传文件」「下载这个文件」 |
 | 导入腾讯会议 | `references/connectors.md` | 「把会议录制导入」「导入会议录制」 |
+| 智能表格 / 结构化数据 | `references/smartsheet.md` | 「智能表格」「乐享表格」「表格里的数据」「新增一行」「查询记录」 |
+| 草稿 / 存草稿 / 发布 | `references/draft.md` | 「先存草稿」「保存为草稿」「发布草稿」「查看草稿」 |
+| 查看评论 | `references/comment.md` | 「这个页面有什么评论」「看看评论」「有没有讨论」 |
 | 数据模型 / URL 规则 / 完整安全规则 | `references/base.md` | 由上述模块内部引用 |
 
 ### ⚠️ 易混淆场景
@@ -109,6 +112,9 @@ MCP Tool: whoami
 | `references/blocks.md` | 已有页面的 Block 级增删改移 |
 | `references/files.md` | 二进制文件上传/下载（三步流程） |
 | `references/connectors.md` | 腾讯会议录制导入 |
+| `references/smartsheet.md` | 智能表格增删查改、schema 管理 |
+| `references/draft.md` | Markdown 草稿保存、发布、管理 |
+| `references/comment.md` | 知识页面评论查看 |
 | `references/base.md` | 数据模型、完整安全规则、Block 结构、工具发现 |
 | `references/index.md` | 完整索引 + 按场景推荐加载顺序 |
 
@@ -130,4 +136,4 @@ MCP Tool: whoami
 
 ---
 
-> Skill version: **2.1.0**
+> Skill version: **2.2.0**

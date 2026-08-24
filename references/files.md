@@ -18,16 +18,18 @@
 ## 工具概览
 
 ### 📎 文件管理
-- `file_apply_upload` — 申请文件上传（返回 upload_url 和 session_id）
+- `file_apply_upload` — 申请文件上传凭证（返回 upload_url 和 session_id）
 - `file_commit_upload` — 确认上传完成
 - `file_describe_file` — 获取文件详情
-- `file_download_file` — 下载文件
+- `file_download_file` — 获取文件下载地址
+- `file_list_revisions` — 获取文件历史版本列表
+- `file_revert_file` — 恢复文件到指定历史版本
 
 ---
 
 ## 文件上传完整流程（三步）
 
-> ⚠️ **必须严格按顺序执行以下三步，缺一不可。**
+>⚠️ **必须严格按顺序执行以下三步，缺一不可。**
 
 ### Step 1: 申请上传凭证（MCP 调用）
 
@@ -48,9 +50,9 @@ Arguments: {
 |------|------|----------|
 | `parent_entry_id` | 目标目录的 entry_id | 从知识库 URL 或 `entry_list_entries` 获取 |
 | `name` | 文件名（含扩展名） | 本地文件名 |
-| `size` | 文件大小（**字节数，必填**） | 通过 `wc -c <文件>` 或 `stat -f%z <文件>` 获取 |
+| `size` | 文件大小（**字节数，必填**） | 通过 `wc -c<文件>` 或 `stat -f%z <文件>` 获取 |
 | `mime_type` | MIME 类型 | 见下方常见类型表 |
-| `upload_type` | 固定填 `"PRE_SIGNED_URL"` | — |
+| `upload_type` | 固定填`"PRE_SIGNED_URL"` | — |
 
 **返回值**（关键字段）：
 ```json
@@ -62,9 +64,9 @@ Arguments: {
 }
 ```
 
-### Step 2: HTTP PUT 上传文件内容（curl 命令，非 MCP）
+### Step 2: HTTP PUT 上传文件内容（curl命令，非 MCP）
 
-> ⚠️ **这一步不是 MCP 调用，必须用 curl 命令执行 HTTP PUT 请求。**
+>⚠️ **这一步不是 MCP 调用，必须用 curl 命令执行 HTTP PUT 请求。**
 
 ```bash
 curl -X PUT \
@@ -96,7 +98,7 @@ Arguments: {
 
 ---
 
-## 常用 MIME 类型速查
+## 常用MIME 类型速查
 
 | 文件类型 | 扩展名 | mime_type |
 |----------|--------|-----------|
@@ -115,11 +117,33 @@ Arguments: {
 
 ## 更新已有文件
 
-更新文件需要额外的 `file_id` 参数，且 `parent_entry_id` 填**文件自身的 entry_id**（不是父目录）。
+更新文件需要额外的 `file_id` 参数，且`parent_entry_id` 填**文件自身的 entry_id**（不是父目录）。
 
 1. 先获取 file_id：`entry_describe_entry(entry_id=<文件的 entry_id>)` → 返回值中 `target_id` 就是 `file_id`
 2. 调用 `file_apply_upload` 时额外传入 `file_id` 参数
 3. 同样执行 Step 2（curl PUT）和 Step 3（commit_upload）
+
+---
+
+## 文件版本管理
+
+### 查看历史版本
+
+```
+MCP Tool: file_list_revisions
+Arguments: { "file_id": "<file_id>" }
+→ 返回版本列表，每个版本含 revision_id、创建时间等
+```
+
+### 恢复到指定版本
+
+```
+MCP Tool: file_revert_file
+Arguments: {
+  "file_id": "<file_id>",
+  "revision_id": "<目标版本 revision_id>"
+}
+```
 
 ---
 
@@ -128,10 +152,10 @@ Arguments: {
 | 错误 | 原因 | 修复 |
 |------|------|------|
 | apply_upload 失败 | 缺少 `size` 参数 | **必须传文件字节数** |
-| curl PUT 返回 403 | upload_url 过期或格式错误 | 重新执行 Step 1 获取新 URL |
+| curl PUT 返回 403 | upload_url 过期或格式错误 | 重新执行 Step 1 获取新URL |
 | curl PUT 上传 0 字节 | 用了 `-d` 而不是 `--data-binary` | 改用 `--data-binary "@文件"` |
-| commit 后文件为空 | 跳过了 Step 2 | 必须先 curl PUT 上传文件内容 |
-| 更新文件变成新建 | 没传 `file_id` | 更新时必须传 `file_id` |
+| commit后文件为空 | 跳过了 Step 2 | 必须先curl PUT 上传文件内容 |
+| 更新文件变成新建| 没传 `file_id` | 更新时必须传 `file_id` |
 | 更新时 parent_entry_id 错误 | 填了父目录 ID | 更新时填**文件自身的 entry_id** |
 
 ---
@@ -168,6 +192,6 @@ Arguments: {
 ...
 
 📊 全部处理完成：
-- 成功：160 个
+- 成功：160个
 - 失败：3 个（image_42.png: 超时；image_87.png: 403; image_156.png: 超时）
 ```

@@ -94,10 +94,10 @@ Team → Space → Entry（树形结构，root_entry_id 为根）
 ### 写入 vs 读取工具分类
 
 **写入操作**（需满足安全规则）：
-`entry_create_entry`、`entry_import_content`、`entry_import_content_to_entry`、`block_update_block`、`block_update_blocks`、`block_create_block_descendant`、`block_delete_block`、`block_delete_block_children`、`block_move_blocks`、`entry_rename_entry`、`entry_move_entry`、`file_apply_upload`、`file_commit_upload`、`file_create_hyperlink`
+`entry_create_entry`、`entry_import_content`、`entry_import_content_to_entry`、`entry_rename_entry`、`entry_move_entry`、`entry_set_entry_validity`、`block_update_block`、`block_update_blocks`、`block_update_page`、`block_create_block_descendant`、`block_delete_block`、`block_delete_block_children`、`block_move_blocks`、`file_apply_upload`、`file_commit_upload`、`file_create_hyperlink`、`file_revert_file`、`draft_save_markdown_draft`、`draft_publish_markdown_draft`、`draft_delete_markdown_draft`、`smartsheet_create`、`smartsheet_create_records`、`smartsheet_update_records`、`smartsheet_delete_records`、`smartsheet_update_schema`、`smartsheet_create_field`、`smartsheet_update_field`、`smartsheet_delete_field`、`smartsheet_create_view`、`smartsheet_update_view`、`smartsheet_delete_view`
 
 **只读操作**（不受安全规则限制，可直接执行）：
-`team_list_teams`、`team_describe_team`、`team_list_frequent_teams`、`space_list_spaces`、`space_describe_space`、`entry_list_children`、`block_list_block_children`、`search_kb_search`、`search_kb_embedding_search`、`space_list_recently_spaces`、`entry_list_latest_entries`、`entry_describe_ai_parse_content`、`file_describe_file`、`file_download_file`、`whoami`
+`team_list_teams`、`team_describe_team`、`team_list_frequent_teams`、`space_list_spaces`、`space_describe_space`、`space_list_recently_spaces`、`space_describe_personal_space`、`entry_list_children`、`entry_describe_entry`、`entry_describe_ai_parse_content`、`entry_list_parents`、`entry_list_latest_entries`、`entry_list_recently_entries`、`block_list_block_children`、`block_describe_block`、`block_fetch_page`、`search_kb_search`、`search_kb_embedding_search`、`lexiang_search`、`lexiang_fetch`、`file_describe_file`、`file_download_file`、`file_list_revisions`、`draft_describe_markdown_draft`、`smartsheet_fetch`、`smartsheet_list`、`smartsheet_list_smartsheets`、`smartsheet_list_records`、`smartsheet_describe_record`、`smartsheet_list_fields`、`smartsheet_list_views`、`comment_list_comments`、`comment_describe_comment`、`whoami`
 
 ---
 
@@ -237,6 +237,9 @@ search_kb_search(keyword="xxx", _mcp_fields="items.target_id,items.title,items.t
 | `references/common-errors.md` | 常见错误排查（高频错误速查表） |
 | `references/doc-templates.md` | 文档类型与大纲模板 |
 | `references/theme-config.md` | 主题配色配置 |
+| `references/smartsheet.md` | 智能表格增删查改、schema 管理 |
+| `references/draft.md` | Markdown 草稿保存、发布、管理 |
+| `references/comment.md` | 知识页面评论查看 |
 
 ### 辅助脚本（scripts/）
 
