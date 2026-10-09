@@ -12,6 +12,7 @@
 | 更新文件失败 | file_id 未传或 parent_entry_id 错误 | 更新时 parent_entry_id = 当前文件 entry_id |
 | 块创建报错 | h1/h2/code 等叶子节点包含 children | **标题、代码块等不支持 children** |
 | 块创建不完整 | 缺少顶层 children | 确保 children 包含所有顶层块 ID |
+| 智能表格写入返回 999 | CellValue 结构不符合定义 | `text` 写成 `[{"text_run":{"content":"..."}}]`，详见下文错误五 |
 
 ---
 
@@ -224,6 +225,51 @@ Step 2: 从返回值中提取
   "text": {"elements": [{"text_run": {"content": "提示内容"}}]}
 }
 ```
+
+---
+
+## 错误五：智能表格写入返回 999（CellValue 格式错误）
+
+### 错误表现
+
+调用 `smartsheet_create_records` / `smartsheet_update_records` 返回 **999 系统错误**，没有明确的参数错误提示。
+
+### 根因
+
+`fields` 的 value（CellValue）结构不符合乐享定义。
+
+`CellValue.text` 是 `repeated TextElement`，而 `TextElement` 是 `oneof { text_run / mention_staff / ... }`，**纯文本必须写在 `text_run.content` 里**：
+
+```json
+// ✅ 正确格式
+{"text": [{"text_run": {"content": "张三"}}]}
+```
+
+结构不符合该定义时，protojson 反序列化失败，网关返回 999。
+
+### 正确参数
+
+```json
+{
+  "entry_id": "<entry_id>",
+  "smartsheet_id": "<smartsheet_id>",
+  "records": [
+    {
+      "fields": {
+        "<field_id_姓名>": {"text": [{"text_run": {"content": "张三"}}]},
+        "<field_id_年龄>": {"number": 28},
+        "<field_id_城市>": {"single_select": {"name": "北京"}}
+      }
+    }
+  ]
+}
+```
+
+### 通用防错做法：先读后写
+
+写入前先 `smartsheet_list_records` 读一条真实记录，**照抄**返回的 `fields` 结构构造参数——读接口返回的 CellValue 与写接口期望的结构完全一致，可从根本上避免格式出错。
+
+> 拿到 999 时**不要原样重试**，先读一条真实记录、修正格式后再试。更完整的类型说明见 `references/smartsheet.md`。
 
 ---
 

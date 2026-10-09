@@ -35,6 +35,30 @@
 
 ---
 
+## 🔑 CellValue 字段值格式（写入前必读）
+
+`create_records` / `update_records` 中 `fields` 的 **value** 必须是乐享的 `CellValue` 结构。
+这是全模块最容易出错的地方，**构造参数时务必严格照抄本文档示例**。
+
+### 常见字段类型 → 正确结构
+
+| 字段类型 | 正确结构 |
+|---------|---------|
+| 文本 TEXT | `{"text": [{"text_run": {"content": "张三"}}]}` |
+| 数字 NUMBER | `{"number": 28}` |
+| 单选 SELECT | `{"single_select": {"name": "北京"}}` |
+
+> 上表未覆盖的类型，以 `get_tool_schema(tool_name="smartsheet_create_records")` 返回值、或表格中已有记录的真实结构为准。
+
+### 结构原理
+
+`CellValue.text` 是 `repeated TextElement`（数组），而 `TextElement` 是 `oneof { text_run / mention_staff / ... }`，
+因此**纯文本必须写在 `text_run.content` 里**。结构不符合该定义时，protojson 反序列化会失败，网关返回 **999 系统错误**。
+
+> 🚨 **警示**：`text` 的值固定为 `[{"text_run": {"content": "..."}}]`。构造参数时**不要凭字面猜测**，直接照抄本文档示例或表格中已有记录的真实结构。
+
+---
+
 ## 标准工作流
 
 ### 1. 找到智能表格
@@ -66,18 +90,34 @@ smartsheet_list_records(
 
 ### 3. 新增数据
 
+**⚠️ 先「照抄」再写入（防错关键）**：表格若已有记录，先读一条照着返回的 `fields` 结构构造参数，**不要凭空构造**——读接口返回的 CellValue 与写接口期望的结构完全一致。
+
+```
+smartsheet_list_records(entry_id=<entry_id>, smartsheet_id=<smartsheet_id>, page_size=1)
+  → 观察返回的 fields 结构，照此构造写入参数
+```
+
+表格为空（新建表）时，按上文 `CellValue` 示例构造：
+
 ```
 smartsheet_create_records(
   entry_id=<entry_id>,
   smartsheet_id=<smartsheet_id>,
   records=[
-    { "fields": { "<field_id>": <CellValue>, ... } },
+    {
+      "fields": {
+        "<field_id_姓名>": {"text": [{"text_run": {"content": "张伟"}}]},
+        "<field_id_部门>": {"text": [{"text_run": {"content": "技术部"}}]},
+        "<field_id_年龄>": {"number": 28},
+        "<field_id_城市>": {"single_select": {"name": "北京"}}
+      }
+    },
     ...
   ]
 )
 ```
 
-> `fields` 中的 key 为 `field_id`（通过 `smartsheet_list_fields` 获取），value 为对应类型的 CellValue。
+> `fields` 中的 key 为 `field_id`（通过 `smartsheet_list_fields` 获取），value 为对应类型的 CellValue（见上文「CellValue 字段值格式」）。
 
 ### 4. 更新数据
 
@@ -86,13 +126,16 @@ smartsheet_update_records(
   entry_id=<entry_id>,
   smartsheet_id=<smartsheet_id>,
   records=[
-    { "record_id": "<record_id>", "fields": { "<field_id>": <new_value> } },
+    {
+      "record_id": "<record_id>",
+      "fields": { "<field_id>": {"text": [{"text_run": {"content": "新内容"}}]} }
+    },
     ...
   ]
 )
 ```
 
-> 仅更新指定字段，其他字段保持不变。
+> 仅更新指定字段，其他字段保持不变。value 同样遵循 `CellValue` 结构（见上文）。
 
 ### 5. 删除数据
 
@@ -142,3 +185,6 @@ smartsheet_update_schema(
 4. **批量限制**：create/update/delete 单次 ≤ 50 条，超出时分批执行
 5. **`smartsheet_fetch` 不返回行数据**：行数据通过 `smartsheet_list_records` 获取
 6. 参数不确定时以 `get_tool_schema(tool_name="xxx")` 返回为准
+7. **`text` 固定写法**：富文本必须写成 `[{"text_run":{"content":"..."}}]`，内容放在 `text_run.content` 里
+8. **写入前先读**：表格非空时先 `list_records` 读一条真实记录，照抄 `fields` 结构再写入，可避免绝大多数格式错误
+9. **遇到 999 系统错误**：优先怀疑 `CellValue` 结构不符合定义导致的 protojson 反序列化失败。此时**不要原样重试**，应先读一条真实记录、照抄修正格式后再试
