@@ -114,7 +114,7 @@ Step 3: 在 block_create_block_descendant 中，attachment/image block
 2. **Block ID 映射**：`block_id` 为客户端临时 ID，服务端返回实际 ID 映射
 3. **标题与内容平级**：标题块不能包含 children，通过顶层 `children` 顺序体现文档结构
 4. **`_mcp_fields` 优化**：所有工具支持 `_mcp_fields` 参数选择返回字段，减少 token 消耗
-5. 参数不确定时以 `get_tool_schema(tool_name="xxx")` 返回为准
+5. 参数不确定时用 `get_tool_schema(tool_name="xxx")` 获取定义；若当前只暴露元工具（代理模式），业务工具需经 `call_tool(tool_name=...)` 代理调用（见 `references/base.md`）
 
 ---
 

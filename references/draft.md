@@ -78,4 +78,4 @@ draft_delete_markdown_draft(entry_id=<entry_id>)
 3. **`draft_describe_markdown_draft` 返回空**：表示该页面当前没有未发布的草稿，属于正常状态
 4. **`draft_publish_markdown_draft` 的 `content` 参数**：可选传入，用于在发布时覆盖草稿内容；不传则直接发布当前草稿
 5. **`force_publish=true`**：跳过版本冲突检测，强制发布，谨慎使用
-6.参数不确定时以 `get_tool_schema(tool_name="xxx")` 返回为准
+6.参数不确定时用 `get_tool_schema(tool_name="xxx")` 获取定义；若当前只暴露元工具（代理模式），业务工具需经 `call_tool(tool_name=...)` 代理调用（见 `references/base.md`）

@@ -53,4 +53,4 @@ Step 3: 导入录制
 ## ⚠️ 核心注意事项
 
 1. **`_mcp_fields` 优化**：所有工具支持 `_mcp_fields` 参数选择返回字段，减少 token 消耗
-2. 参数不确定时以 `get_tool_schema(tool_name="xxx")` 返回为准
+2. 参数不确定时用 `get_tool_schema(tool_name="xxx")` 获取定义；若当前只暴露元工具（代理模式），业务工具需经 `call_tool(tool_name=...)` 代理调用（见 `references/base.md`）

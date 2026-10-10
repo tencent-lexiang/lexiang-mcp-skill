@@ -113,7 +113,7 @@ Step 3: draft_publish_markdown_draft(entry_id, revision_id, content?)
 1. `entry_import_content` 的 `parent_id` 通常用 `root_entry_id`（通过 `space_describe_space` 获取）
 2. `space_id` 和 `parent_id` 要同时传
 3. 支持的 `content_type`：`markdown`、`html`
-4. 参数不确定时以 `get_tool_schema(tool_name="xxx")` 返回为准
+4. 参数不确定时用 `get_tool_schema(tool_name="xxx")` 获取定义；若当前只暴露元工具（代理模式），业务工具需经 `call_tool(tool_name=...)` 代理调用（见 `references/base.md`）
 
 ---
 

@@ -90,9 +90,9 @@ AI 判断：这是平台功能缺失，不是用户操作问题
 ### 进化流程
 
 ```
-1. 调用 list_tool_categories 获取最新工具列表
+1. 调用 list_tool_categories（或 search_tools）获取最新工具列表
        ↓
-2. 对比本 Skill 中记录的工具名和参数
+2. 对比本 Skill 中记录的工具名和参数，并核对调用方式（业务工具是否在可用工具列表中 → 直调模式 / `call_tool` 代理模式，见 `references/base.md`）
        ↓
 3. 对有疑问的工具，调用 get_tool_schema 获取最新 schema
        ↓

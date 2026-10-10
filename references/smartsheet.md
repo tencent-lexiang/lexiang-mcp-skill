@@ -184,7 +184,7 @@ smartsheet_update_schema(
 3. **field_id 而非字段名**：`create_records` / `update_records` 中 `fields` 的 key 是 `field_id`，需先调用 `smartsheet_list_fields` 获取
 4. **批量限制**：create/update/delete 单次 ≤ 50 条，超出时分批执行
 5. **`smartsheet_fetch` 不返回行数据**：行数据通过 `smartsheet_list_records` 获取
-6. 参数不确定时以 `get_tool_schema(tool_name="xxx")` 返回为准
+6. 参数不确定时用 `get_tool_schema(tool_name="xxx")` 获取定义；若当前只暴露元工具（代理模式），业务工具需经 `call_tool(tool_name=...)` 代理调用（见 `references/base.md`）
 7. **`text` 固定写法**：富文本必须写成 `[{"text_run":{"content":"..."}}]`，内容放在 `text_run.content` 里
 8. **写入前先读**：表格非空时先 `list_records` 读一条真实记录，照抄 `fields` 结构再写入，可避免绝大多数格式错误
 9. **遇到 999 系统错误**：优先怀疑 `CellValue` 结构不符合定义导致的 protojson 反序列化失败。此时**不要原样重试**，应先读一条真实记录、照抄修正格式后再试

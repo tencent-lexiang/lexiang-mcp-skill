@@ -43,4 +43,4 @@ Step 3（可选，获取评论正文）: comment_describe_comment(
 1. **`content` 字段格式特殊**：评论的 `content` 不是普通 HTML，需要特别注意解析，不能直接当普通文本展示
 2. **`target_type` 固定值**：当前只支持 `"kb_entry"`（页面评论）
 3. **只读能力**：当前 MCP 只支持读取评论，无法通过 MCP 发布新评论或回复
-4. 参数不确定时以 `get_tool_schema(tool_name="xxx")` 返回为准
+4. 参数不确定时用 `get_tool_schema(tool_name="xxx")` 获取定义；若当前只暴露元工具（代理模式），业务工具需经 `call_tool(tool_name=...)` 代理调用（见 `references/base.md`）
