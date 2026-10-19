@@ -23,7 +23,7 @@
 ### 📖 条目与结构浏览
 - `entry_list_children` — 浏览目录结构
 - `entry_describe_entry` — 获取条目元信息（不含正文）
-- `entry_describe_ai_parse_content` — 获取 AI 解析内容（含正文）
+- `entry_describe_ai_parse_content` — 获取 AI 解析内容（含正文；**所有条目类型均适用**，含 PDF/PPT/Word/图片等文件附件）
 - `entry_list_parents` — 获取父级路径（面包屑）
 - `entry_list_latest_entries` — 获取最近更新条目
 - `entry_list_recently_entries` — 获取当前用户最近浏览的条目
@@ -78,8 +78,13 @@
 | 工具 | 返回内容 | 用途 |
 |------|----------|------|
 | `entry_describe_entry` | 条目元信息（ID、名称、类型等） | 获取基本信息 |
-| `entry_describe_ai_parse_content` | **条目正文内容** | 读取实际内容进行分析 |
-| `lexiang_fetch` | 任意资源详情 | 快捷读取单个 entry/space/team/file/block |
+| `entry_describe_ai_parse_content` | **条目 AI 解析内容**（在线文档为正文；文件附件为 OCR/解析文本，PPT 逐页带 page-number 标记与图片描述） | 读取实际内容进行分析，**所有条目类型均适用** |
+| `lexiang_fetch` | 任意资源详情 | 快捷读取单个 entry/space/team/file/block（entry 不含正文） |
+
+> 🚨 **文件内容读取路径**：分析/引用文件附件（PDF/PPT/Word/图片等）内容时，
+> **直接用 `entry_describe_ai_parse_content(entry_id=<文件条目ID>)` 获取解析文本**，
+> **禁止**先 `file_download_file` 下载再本地解析。下载仅用于需要原始二进制的场景
+> （本地再编辑、格式转换、版式还原），见 `references/files.md`。
 
 ---
 

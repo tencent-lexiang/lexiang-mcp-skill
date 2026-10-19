@@ -10,10 +10,10 @@
 |----------|---------|----------|
 | 数据模型/URL 规则/安全规则/Block 结构/工具发现 | base.md | 完整基础知识 |
 | 配置/认证/Token 管理/OAuth/故障排查 | setup.md | WorkBuddy OAuth、手动配置、续期流程 |
-| 搜索文档/阅读内容/语义检索 | search.md | 实体召回、RAG 切片、目录浏览 |
+| 搜索文档/阅读内容/语义检索/分析文件内容 | search.md | 实体召回、RAG 切片、条目与文件 AI 解析、目录浏览 |
 | 创建文档/写入内容/导入/公众号收藏 | writer.md | import_content、create_entry、hyperlink |
 | 编辑已有页面/Block 增删改移 | blocks.md | Block 操作、批量更新、Markdown 转 Block |
-| 上传/下载文件（PDF/Word/图片等） | files.md | 三步上传流程、MIME 类型、更新文件 |
+| 上传/下载文件本体（PDF/Word/图片等） | files.md | 三步上传流程、MIME 类型、更新文件、下载（仅原始文件需求） |
 | 导入外部数据/腾讯会议 | connectors.md | 会议录制搜索/导入 |
 
 ---
@@ -25,6 +25,7 @@
 | 首次使用 | setup.md → base.md |
 | 搜索后写入 | search.md → writer.md |
 | 读取后编辑 | search.md → blocks.md |
+| 分析文件（PDF/PPT/Word）内容 | search.md（直接 AI 解析，不下载） |
 | 上传文件 | files.md |
 | 会议导入 | connectors.md → writer.md |
 | 排查错误 | common-errors.md |

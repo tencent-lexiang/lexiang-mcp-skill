@@ -21,9 +21,29 @@
 - `file_apply_upload` — 申请文件上传凭证（返回 upload_url 和 session_id）
 - `file_commit_upload` — 确认上传完成
 - `file_describe_file` — 获取文件详情
-- `file_download_file` — 获取文件下载地址
+- `file_download_file` — 获取文件下载地址（仅需要原始文件时使用；分析内容请用 `entry_describe_ai_parse_content`，见下方「读取/分析文件内容」）
 - `file_list_revisions` — 获取文件历史版本列表
 - `file_revert_file` — 恢复文件到指定历史版本
+
+---
+
+## 📖 读取/分析文件内容（优先直接解析，不要下载）
+
+**分析、引用、总结文件内容时，不需要下载文件，直接获取服务端 AI 解析文本：**
+
+```
+MCP Tool: entry_describe_ai_parse_content
+Arguments: { "entry_id": "<文件条目的 entry_id>" }
+→ 在线文档返回正文 HTML/markdown；文件附件（PDF/PPT/Word/图片）返回
+  OCR 解析文本（PPT 逐页带 page-number 标记与图片 OCR 描述），可直接进入上下文分析
+```
+
+| 需求 | 正确工具 | 说明 |
+|------|---------|------|
+| 分析/引用/总结文件**内容** | `entry_describe_ai_parse_content` | 解析文本直接进上下文，无需下载 |
+| 需要**原始文件**（本地编辑、格式转换、版式还原、二次处理） | `file_download_file` | 返回下载地址，下载后本地解析 |
+
+>🚨 仅分析内容却先下载文件再本地解析，会多一次网络传输与解析成本、浪费上下文，**禁止**这样退化。
 
 ---
 

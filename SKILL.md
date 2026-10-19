@@ -1,6 +1,6 @@
 ---
 name: lexiang-knowledge-base
-version: 2.2.2
+version: 2.2.3
 description: "乐享知识库 MCP 全功能 Skill。当用户提到「乐享」「知识库」「个人知识库」「我的知识库」「lexiang」，或提供 lexiangla.com 链接，或涉及知识库的搜索/写入/编辑/文件/配置/评论/草稿/智能表格等操作时使用。"
 ---
 
@@ -56,7 +56,8 @@ description: "乐享知识库 MCP 全功能 Skill。当用户提到「乐享」�
 | 搜索 / 查找 / 阅读 / 浏览 | `references/search.md` | 「找一下」「搜索」「读一下这个页面」「打开链接」 |
 | 创建文档 / 写入 / 保存 / 导入 | `references/writer.md` | 「写到乐享」「创建文档」「保存到知识库」「存到我的知识库」「保存到个人知识库」「导入」 |
 | 编辑已有页面 / Block 操作 | `references/blocks.md` | 「修改这个页面」「加个标题」「删掉这段」「在 /pages/xxx 里…」 |
-| 上传/下载文件（PDF/Word/图片等） | `references/files.md` | 「传个 PDF」「上传文件」「下载这个文件」 |
+| 分析/引用文件内容（PDF/PPT/Word/图片） | `references/search.md` | 「这个文件讲了什么」「分析这份 PDF/方案」「引用的文档内容」 |
+| 上传/下载文件本体（PDF/Word/图片等） | `references/files.md` | 「传个 PDF」「上传文件」「下载这个文件」 |
 | 导入腾讯会议 | `references/connectors.md` | 「把会议录制导入」「导入会议录制」 |
 | 智能表格 / 结构化数据 | `references/smartsheet.md` | 「智能表格」「乐享表格」「表格里的数据」「新增一行」「查询记录」 |
 | 草稿 / 存草稿 / 发布 | `references/draft.md` | 「先存草稿」「保存为草稿」「发布草稿」「查看草稿」 |
@@ -71,6 +72,7 @@ description: "乐享知识库 MCP 全功能 Skill。当用户提到「乐享」�
 | 用户提供 `/spaces/xxx` 链接 + 要求「写入/创建」 | `references/writer.md` | 在知识库下**新建文档** |
 | 用户提供 `/pages/xxx` 链接 + 仅要求「读/总结」 | `references/search.md` | **只读**操作 |
 | 上传 PDF/Word/图片 | `references/files.md` | 二进制文件，非文本文档 |
+| 分析/引用文件（PDF/PPT/Word/图片）的内容 | `references/search.md` → 直接 AI 解析 | **用 `entry_describe_ai_parse_content` 读解析文本，不要下载文件再本地解析** |
 | 创建 Markdown 文本文档 | `references/writer.md` | 文本内容，非二进制 |
 | 「乐享里有一篇关于 X 的文档」 | `references/search.md` → 先搜索 | **必须先检索**，不能直接回答 |
 | 「看看乐享里 XX 的写作风格」 | `references/search.md` → 先读取 | **必须先读取内容**，不能凭空分析 |
@@ -107,10 +109,10 @@ MCP Tool: whoami
 | 文件 | 职责 |
 |------|------|
 | `references/setup.md` | Token 配置、续期、WorkBuddy OAuth、故障排查 |
-| `references/search.md` | 关键词/语义搜索、内容读取、目录浏览 |
+| `references/search.md` | 关键词/语义搜索、内容读取（含文件附件 AI 解析）、目录浏览 |
 | `references/writer.md` | 新建文档、导入内容、公众号收藏 |
 | `references/blocks.md` | 已有页面的 Block 级增删改移 |
-| `references/files.md` | 二进制文件上传/下载（三步流程） |
+| `references/files.md` | 二进制文件上传/下载（三步流程）；内容分析优先直接解析，下载仅限原始文件需求 |
 | `references/connectors.md` | 腾讯会议录制导入 |
 | `references/smartsheet.md` | 智能表格增删查改、schema 管理 |
 | `references/draft.md` | Markdown 草稿保存、发布、管理 |
@@ -136,4 +138,4 @@ MCP Tool: whoami
 
 ---
 
-> Skill version: **2.2.2**
+> Skill version: **2.2.3**
